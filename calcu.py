@@ -8,18 +8,28 @@ bot = telebot.TeleBot(TOKEN)
 def send_welcome(message):
     bot.reply_to(message, "သင်္ချာပုစ္ဆာတစ်ခုခု ရိုက်ထည့်လိုက်ပါ (ဥပမာ- 1+1)")
 
+import telebot
+import re
+
+TOKEN = 'YOUR_BOT_TOKEN_HERE'
+bot = telebot.TeleBot(TOKEN)
+
 @bot.message_handler(func=lambda message: True)
 def calculate(message):
     try:
-        # User ရိုက်တဲ့စာကို တွက်ချက်ခြင်း
-        question = message.text
-        answer = eval(question)
+        # User ပို့တဲ့စာထဲကနေ ဂဏန်းတွေနဲ့ သင်္ကေတ (+, -, *, /) တွေကိုပဲ ရှာထုတ်မယ်
+        expression = "".join(re.findall(r'[0-9+\-*/.]+', message.text))
         
-        # ၁+၁=၂ ပုံစံမျိုး ပြန်ဖြေခြင်း
-        bot.reply_to(message, f"{question} = {answer}")
-    except:
-        # မှားယွင်းတာ ရိုက်ရင် ဘာမှပြန်မလုပ်ပါ (သို့မဟုတ် Error ပြပါ)
-        bot.reply_to(message, "တွက်လို့မရတဲ့ format ဖြစ်နေပါတယ်")
+        if expression:
+            # ထုတ်ယူထားတဲ့ သင်္ချာပုစ္ဆာကို တွက်မယ်
+            answer = eval(expression)
+            # မူရင်းစာသား = အဖြေ ပုံစံနဲ့ ပြန်ဖြေမယ်
+            bot.reply_to(message, f"{message.text} = {answer}")
+        else:
+            bot.reply_to(message, "တွက်ချက်ဖို့ ဂဏန်းရှာမတွေ့ပါဘူး။")
+            
+    except Exception:
+        bot.reply_to(message, "တွက်လို့မရတဲ့ format ဖြစ်နေပါတယ်။")
 
 print("Bot is running...")
 bot.infinity_polling()
