@@ -1,35 +1,26 @@
 import telebot
-
-# Bot Token ကို ဒီမှာ ထည့်ပါ
-TOKEN = '8562810091:AAF774c8Es0zv0nGRSQ1xIZjZqhvd3LPh7I'
-bot = telebot.TeleBot(TOKEN)
-
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, "သင်္ချာပုစ္ဆာတစ်ခုခု ရိုက်ထည့်လိုက်ပါ (ဥပမာ- 1+1)")
-
-import telebot
 import re
 
-TOKEN = 'YOUR_BOT_TOKEN_HERE'
+TOKEN = '8562810091:AAF774c8Es0zv0nGRSQ1xIZjZqhvd3LPh7I' # ဒီနေရာမှာ သင့် Bot Token ထည့်ပါ
 bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(func=lambda message: True)
 def calculate(message):
     try:
-        # User ပို့တဲ့စာထဲကနေ ဂဏန်းတွေနဲ့ သင်္ကေတ (+, -, *, /) တွေကိုပဲ ရှာထုတ်မယ်
-        expression = "".join(re.findall(r'[0-9+\-*/.]+', message.text))
+        text = message.text
+        # သင်္ချာလက္ခဏာ (+, -, *, /) ရဲ့ ရှေ့နဲ့နောက်မှာရှိတဲ့ ဂဏန်းတွေကို ရှာတဲ့ Regular Expression
+        # ဥပမာ - 5750*2 ဆိုတာကို ရှာထုတ်ပေးမှာပါ
+        match = re.search(r'(\d+[\+\-\*//]\d+)', text)
         
-        if expression:
-            # ထုတ်ယူထားတဲ့ သင်္ချာပုစ္ဆာကို တွက်မယ်
+        if match:
+            expression = match.group(1)
+            # ရှာတွေ့တဲ့ အပိုင်းကိုပဲ တွက်ချက်မယ်
             answer = eval(expression)
-            # မူရင်းစာသား = အဖြေ ပုံစံနဲ့ ပြန်ဖြေမယ်
-            bot.reply_to(message, f"{message.text} = {answer}")
+            bot.reply_to(message, f"ရလဒ်: {answer}")
         else:
-            bot.reply_to(message, "တွက်ချက်ဖို့ ဂဏန်းရှာမတွေ့ပါဘူး။")
+            bot.reply_to(message, "တွက်ချက်ဖို့ သင်္ချာပုံစံ (ဥပမာ 5750*2) ရှာမတွေ့ပါဘူး။")
             
     except Exception:
-        bot.reply_to(message, "တွက်လို့မရတဲ့ format ဖြစ်နေပါတယ်။")
+        bot.reply_to(message, "တွက်ချက်မှု မှားယွင်းနေပါတယ်။")
 
-print("Bot is running...")
 bot.infinity_polling()
