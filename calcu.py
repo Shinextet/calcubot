@@ -1,8 +1,16 @@
 import telebot
 import re
+from flask import Flask
+import threading
+import os
 
-TOKEN = '8562810091:AAF774c8Es0zv0nGRSQ1xIZjZqhvd3LPh7I' # ဒီနေရာမှာ သင့် Bot Token ထည့်ပါ
+TOKEN = '8562810091:AAF774c8Es0zv0nGRSQ1xIZjZqhvd3LPh7I' # ဒီနေရာမှာ သင့် Token ကို သေချာထည့်ပါ
 bot = telebot.TeleBot(TOKEN)
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is Online!"
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -11,20 +19,21 @@ def start(message):
 @bot.message_handler(func=lambda message: True)
 def calculate(message):
     try:
-        text = message.text
-        # သင်္ချာလက္ခဏာ (+, -, *, /) ရဲ့ ရှေ့နဲ့နောက်မှာရှိတဲ့ ဂဏန်းတွေကို ရှာတဲ့ Regular Expression
-        # ဥပမာ - 5750*2 ဆိုတာကို ရှာထုတ်ပေးမှာပါ
-        match = re.search(r'(\d+[\+\-\*//]\d+)', text)
-        
+        # စာသားတွေကြားထဲက ဂဏန်းနဲ့ သင်္ချာလက္ခဏာကိုပဲ ရှာထုတ်မယ်
+        # ဥပမာ - 5750*2 ကိုပဲ ဆွဲထုတ်ပါမယ်
+        match = re.search(r'(\d+[\+\-\*//]\d+)', message.text)
         if match:
             expression = match.group(1)
-            # ရှာတွေ့တဲ့ အပိုင်းကိုပဲ တွက်ချက်မယ်
             answer = eval(expression)
             bot.reply_to(message, f"ရလဒ်: {answer}")
-        else:
-            bot.reply_to(message, "တွက်ချက်ဖို့ သင်္ချာပုံစံ (ဥပမာ 1*2) ရှာမတွေ့ပါဘူး။")
-            
-    except Exception:
-        bot.reply_to(message, "တွက်ချက်မှု မှားယွင်းနေပါတယ်။")
+    except:
+        pass
 
-bot.infinity_polling()
+def run():
+    # Render အတွက် Port 8080 ကို ဖွင့်ပေးခြင်း
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
+if __name__ == "__main__":
+    # Web server ကို background မှာ run ပြီး Bot ကို စတင်မယ်
+    threading.Thread(target=run).start()
+    bot.infinity_polling()
