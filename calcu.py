@@ -11,7 +11,7 @@ SUPABASE_URL = "https://onenfdaddikacglvayvg.supabase.co"
 SUPABASE_KEY = "sb_publishable_H4vO1GVW223MHhBz6wxTvA_g6rd9o2J"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-TOKEN = '8562810091:AAF774c8Es0zv0nGRSQ1xIZjZqhvd3LPh7I'
+TOKEN = '8562810091:AAGhEOMmuNmuy_g5towNjmt2i3sFwkLuXU0'
 bot = telebot.TeleBot(TOKEN)
 app = Flask('')
 
